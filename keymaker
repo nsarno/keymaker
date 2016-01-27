@@ -1,0 +1,4 @@
+#!/bin/bash
+
+AWS_CREDENTIALS_PATH="${HOME}/.aws.env"
+eval "$(cat $AWS_CREDENTIALS_PATH) $*"
