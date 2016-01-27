@@ -1,4 +1,42 @@
 #!/bin/bash
 
-AWS_CREDENTIALS_PATH="${HOME}/.aws.env"
-eval "$(cat $AWS_CREDENTIALS_PATH) $*"
+safe_exec() {
+  keychain_path=${KEYCHAIN-${HOME}/.keychain}
+
+  if [[ -f $keychain_path ]]; then
+    decrypted_data=$(openssl enc -aes-256-cbc -d -in $keychain_path)
+    eval "$decrypted_data $*"
+  else
+    >&2 echo 'Error: Keychain file not found.' 
+  fi
+}
+
+setup() {
+  keychain_path=${KEYCHAIN-${HOME}/.keychain}
+
+  echo -n 'AWS_REGION: '
+  read aws_region
+
+  echo -n 'AWS_ACCESS_KEY_ID: '
+  read -s aws_access_key_id
+  echo
+
+  echo -n 'AWS_SECRET_ACCESS_KEY: '
+  read -s aws_secret_access_key
+  echo
+
+  data="AWS_REGION=$aws_region \
+        AWS_DEFAULT_REGION=us-east-1 \
+        AWS_ACCESS_KEY_ID=$aws_access_key_id \
+        AWS_SECRET_ACCESS_KEY=$aws_secret_access_key"
+
+  echo $data | openssl enc -aes-256-cbc -salt -out $keychain_path 
+
+  echo "Encrypted keychain created ($keychain_path)."
+}
+
+if [[ $1 == '--init' ]]; then
+  setup
+else
+  safe_exec $*
+fi
