@@ -4,7 +4,7 @@ Safely execute command line with secret environment variables
 ## Install
 
 ```bash
-curl -fLo /usr/local/bin/keymaker https://raw.githubusercontent.com/nsarno/keymaker/master/keymaker && sudo chmod a+x /usr/local/bin/keymaker
+sudo curl -fLo /usr/local/bin/keymaker https://raw.githubusercontent.com/nsarno/keymaker/master/keymaker && sudo chmod a+x /usr/local/bin/keymaker
 ```
 
 ### Setup
